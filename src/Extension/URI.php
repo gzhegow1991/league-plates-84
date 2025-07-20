@@ -42,11 +42,13 @@ class URI implements ExtensionInterface
     /**
      * Register extension functions.
      * @param Engine $engine
-     * @return null
+     * @return static
      */
     public function register(Engine $engine)
     {
         $engine->registerFunction('uri', array($this, 'runUri'));
+
+        return $this;
     }
 
     /**

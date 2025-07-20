@@ -5,11 +5,12 @@ namespace League\Plates\Tests;
 use League\Plates\Engine;
 use org\bovigo\vfs\vfsStream;
 
+
 class EngineTest extends \PHPUnit\Framework\TestCase
 {
     private $engine;
 
-    protected function setUp(): void
+    protected function setUp() : void
     {
         vfsStream::setup('templates');
 
@@ -65,11 +66,11 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testAddFolder()
     {
         vfsStream::create(
-            array(
-                'folder' => array(
+            [
+                'folder' => [
                     'template.php' => '',
-                ),
-            )
+                ],
+            ]
         );
 
         $this->assertInstanceOf('League\Plates\Engine', $this->engine->addFolder('folder', vfsStream::url('templates/folder')));
@@ -94,11 +95,11 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testRemoveFolder()
     {
         vfsStream::create(
-            array(
-                'folder' => array(
+            [
+                'folder' => [
                     'template.php' => '',
-                ),
-            )
+                ],
+            ]
         );
 
         $this->engine->addFolder('folder', vfsStream::url('templates/folder'));
@@ -114,31 +115,31 @@ class EngineTest extends \PHPUnit\Framework\TestCase
 
     public function testAddData()
     {
-        $this->engine->addData(array('name' => 'Jonathan'));
+        $this->engine->addData([ 'name' => 'Jonathan' ]);
         $data = $this->engine->getData();
-        $this->assertSame('Jonathan', $data['name']);
+        $this->assertSame('Jonathan', $data[ 'name' ]);
     }
 
     public function testAddDataWithTemplate()
     {
-        $this->engine->addData(array('name' => 'Jonathan'), 'template');
+        $this->engine->addData([ 'name' => 'Jonathan' ], 'template');
         $data = $this->engine->getData('template');
-        $this->assertSame('Jonathan', $data['name']);
+        $this->assertSame('Jonathan', $data[ 'name' ]);
     }
 
     public function testAddDataWithTemplates()
     {
-        $this->engine->addData(array('name' => 'Jonathan'), array('template1', 'template2'));
+        $this->engine->addData([ 'name' => 'Jonathan' ], [ 'template1', 'template2' ]);
         $data = $this->engine->getData('template1');
-        $this->assertSame('Jonathan', $data['name']);
+        $this->assertSame('Jonathan', $data[ 'name' ]);
     }
 
     public function testRegisterFunction()
     {
         vfsStream::create(
-            array(
+            [
                 'template.php' => '<?=$this->uppercase($name)?>',
-            )
+            ]
         );
 
         $this->engine->registerFunction('uppercase', 'strtoupper');
@@ -203,10 +204,10 @@ class EngineTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(
             'League\Plates\Engine',
             $this->engine->loadExtensions(
-                array(
+                [
                     new \League\Plates\Extension\URI(''),
                     new \League\Plates\Extension\Asset('public'),
-                )
+                ]
             )
         );
         $this->assertTrue($this->engine->doesFunctionExist('uri'));
@@ -223,9 +224,9 @@ class EngineTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->engine->exists('template'));
 
         vfsStream::create(
-            array(
+            [
                 'template.php' => '',
-            )
+            ]
         );
 
         $this->assertTrue($this->engine->exists('template'));
@@ -234,9 +235,9 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testMakeTemplate()
     {
         vfsStream::create(
-            array(
+            [
                 'template.php' => '',
-            )
+            ]
         );
 
         $this->assertInstanceOf('League\Plates\Template\Template', $this->engine->make('template'));
@@ -245,22 +246,22 @@ class EngineTest extends \PHPUnit\Framework\TestCase
     public function testMakeTemplateWithData()
     {
         vfsStream::create(
-            array(
+            [
                 'template.php' => '',
-            )
+            ]
         );
 
-        $template = $this->engine->make('template', array('name' => 'Jonathan'));
+        $template = $this->engine->make('template', [ 'name' => 'Jonathan' ]);
         $this->assertInstanceOf('League\Plates\Template\Template', $template);
-        $this->assertSame(array('name' => 'Jonathan'), $template->data());
+        $this->assertSame([ 'name' => 'Jonathan' ], $template->data());
     }
 
     public function testRenderTemplate()
     {
         vfsStream::create(
-            array(
+            [
                 'template.php' => 'Hello!',
-            )
+            ]
         );
 
         $this->assertSame('Hello!', $this->engine->render('template'));

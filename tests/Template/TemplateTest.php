@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace League\Plates\Tests\Template;
 
 use League\Plates\Engine;
-use League\Plates\Template\Template;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use League\Plates\Template\Template;
+
 
 class TemplateTest extends TestCase
 {

@@ -2,11 +2,11 @@
 
 namespace League\Plates\Template;
 
-use Exception;
+use Throwable;
+use LogicException;
 use League\Plates\Engine;
 use League\Plates\Exception\TemplateNotFound;
-use LogicException;
-use Throwable;
+
 
 /**
  * Container which holds template data and provides access to template functions.
@@ -15,7 +15,7 @@ class Template
 {
     const SECTION_MODE_REWRITE = 1;
     const SECTION_MODE_PREPEND = 2;
-    const SECTION_MODE_APPEND = 3;
+    const SECTION_MODE_APPEND  = 3;
 
     /**
      * Set section content mode: rewrite/append/prepend
@@ -39,13 +39,13 @@ class Template
      * The data assigned to the template.
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * An array of section content.
      * @var array
      */
-    protected $sections = array();
+    protected $sections = [];
 
     /**
      * The name of the section currently being rendered.
@@ -74,6 +74,7 @@ class Template
 
     /**
      * Create new Template instance.
+     *
      * @param Engine $engine
      * @param string $name
      */
@@ -87,8 +88,10 @@ class Template
 
     /**
      * Magic method used to call extension functions.
-     * @param  string $name
-     * @param  array  $arguments
+     *
+     * @param string $name
+     * @param array  $arguments
+     *
      * @return mixed
      */
     public function __call($name, $arguments)
@@ -98,9 +101,9 @@ class Template
 
     /**
      * Alias for render() method.
-     * @throws \Throwable
-     * @throws \Exception
      * @return string
+     * @throws \Exception
+     * @throws \Throwable
      */
     public function __toString()
     {
@@ -109,7 +112,9 @@ class Template
 
     /**
      * Assign or get template data.
+     *
      * @param array|null $data
+     *
      * @return array|void
      */
     public function data(?array $data = null)
@@ -129,8 +134,10 @@ class Template
     {
         try {
             ($this->engine->getResolveTemplatePath())($this->name);
+
             return true;
-        } catch (TemplateNotFound $e) {
+        }
+        catch ( TemplateNotFound $e ) {
             return false;
         }
     }
@@ -143,19 +150,22 @@ class Template
     {
         try {
             return ($this->engine->getResolveTemplatePath())($this->name);
-        } catch (TemplateNotFound $e) {
-            return $e->paths()[0];
+        }
+        catch ( TemplateNotFound $e ) {
+            return $e->paths()[ 0 ];
         }
     }
 
     /**
      * Render the template and layout.
-     * @param  array  $data
-     * @throws \Throwable
-     * @throws \Exception
+     *
+     * @param array $data
+     *
      * @return string
+     * @throws \Exception
+     * @throws \Throwable
      */
-    public function render(array $data = array())
+    public function render(array $data = [])
     {
         $this->data($data);
         $path = ($this->engine->getResolveTemplatePath())($this->name);
@@ -164,7 +174,7 @@ class Template
             $level = ob_get_level();
             ob_start();
 
-            (function() {
+            (function () {
                 extract($this->data);
                 include func_get_arg(0);
             })($path);
@@ -173,13 +183,14 @@ class Template
 
             if (isset($this->layoutName)) {
                 $layout = $this->engine->make($this->layoutName);
-                $layout->sections = array_merge($this->sections, array('content' => $content));
+                $layout->sections = array_merge($this->sections, [ 'content' => $content ]);
                 $content = $layout->render($this->layoutData);
             }
 
             return $content;
-        } catch (Throwable $e) {
-            while (ob_get_level() > $level) {
+        }
+        catch ( Throwable $e ) {
+            while ( ob_get_level() > $level ) {
                 ob_end_clean();
             }
 
@@ -189,20 +200,26 @@ class Template
 
     /**
      * Set the template's layout.
-     * @param  string $name
-     * @param  array  $data
-     * @return null
+     *
+     * @param string $name
+     * @param array  $data
+     *
+     * @return static
      */
-    public function layout($name, array $data = array())
+    public function layout($name, array $data = [])
     {
         $this->layoutName = $name;
         $this->layoutData = $data;
+
+        return $this;
     }
 
     /**
      * Start a new section block.
-     * @param  string  $name
-     * @return null
+     *
+     * @param string $name
+     *
+     * @return static
      */
     public function start($name)
     {
@@ -219,35 +236,45 @@ class Template
         $this->sectionName = $name;
 
         ob_start();
+
+        return $this;
     }
 
     /**
      * Start a new section block in APPEND mode.
-     * @param  string $name
-     * @return null
+     *
+     * @param string $name
+     *
+     * @return static
      */
     public function push($name)
     {
         $this->appendSection = true; /* for backward compatibility */
         $this->sectionMode = self::SECTION_MODE_APPEND;
         $this->start($name);
+
+        return $this;
     }
 
     /**
      * Start a new section block in PREPEND mode.
-     * @param  string $name
-     * @return null
+     *
+     * @param string $name
+     *
+     * @return static
      */
     public function unshift($name)
     {
         $this->appendSection = false; /* for backward compatibility */
         $this->sectionMode = self::SECTION_MODE_PREPEND;
         $this->start($name);
+
+        return $this;
     }
 
     /**
      * Stop the current section block.
-     * @return null
+     * @return static
      */
     public function stop()
     {
@@ -257,87 +284,101 @@ class Template
             );
         }
 
-        if (!isset($this->sections[$this->sectionName])) {
-            $this->sections[$this->sectionName] = '';
+        if (! isset($this->sections[ $this->sectionName ])) {
+            $this->sections[ $this->sectionName ] = '';
         }
 
-        switch ($this->sectionMode) {
+        switch ( $this->sectionMode ) {
 
             case self::SECTION_MODE_REWRITE:
-                $this->sections[$this->sectionName] = ob_get_clean();
+                $this->sections[ $this->sectionName ] = ob_get_clean();
                 break;
 
             case self::SECTION_MODE_APPEND:
-                $this->sections[$this->sectionName] .= ob_get_clean();
+                $this->sections[ $this->sectionName ] .= ob_get_clean();
                 break;
 
             case self::SECTION_MODE_PREPEND:
-                $this->sections[$this->sectionName] = ob_get_clean().$this->sections[$this->sectionName];
+                $this->sections[ $this->sectionName ] = ob_get_clean() . $this->sections[ $this->sectionName ];
                 break;
 
         }
         $this->sectionName = null;
         $this->sectionMode = self::SECTION_MODE_REWRITE;
         $this->appendSection = false; /* for backward compatibility */
+
+        return $this;
     }
 
     /**
      * Alias of stop().
-     * @return null
+     * @return static
      */
     public function end()
     {
         $this->stop();
+
+        return $this;
     }
 
     /**
      * Returns the content for a section block.
-     * @param  string      $name    Section name
-     * @param  string      $default Default section content
+     *
+     * @param string $name    Section name
+     * @param string $default Default section content
+     *
      * @return string|null
      */
     public function section($name, $default = null)
     {
-        if (!isset($this->sections[$name])) {
+        if (! isset($this->sections[ $name ])) {
             return $default;
         }
 
-        return $this->sections[$name];
+        return $this->sections[ $name ];
     }
 
     /**
      * Fetch a rendered template.
-     * @param  string $name
-     * @param  array  $data
+     *
+     * @param string $name
+     * @param array  $data
+     *
      * @return string
      */
-    public function fetch($name, array $data = array())
+    public function fetch($name, array $data = [])
     {
         return $this->engine->render($name, $data);
     }
 
     /**
      * Output a rendered template.
-     * @param  string $name
-     * @param  array  $data
-     * @return null
+     *
+     * @param string $name
+     * @param array  $data
+     *
+     * @return static
      */
-    public function insert($name, array $data = array())
+    public function insert($name, array $data = [])
     {
         echo $this->engine->render($name, $data);
+
+        return $this;
     }
 
     /**
      * Apply multiple functions to variable.
-     * @param  mixed  $var
-     * @param  string $functions
+     *
+     * @param mixed  $var
+     * @param string $functions
+     *
      * @return mixed
      */
     public function batch($var, $functions)
     {
-        foreach (explode('|', $functions) as $function) {
+        foreach ( explode('|', $functions) as $function ) {
             if ($this->engine->doesFunctionExist($function)) {
-                $var = call_user_func(array($this, $function), $var);
+                $var = call_user_func([ $this, $function ], $var);
             } elseif (is_callable($function)) {
                 $var = call_user_func($function, $var);
             } else {
@@ -352,15 +393,17 @@ class Template
 
     /**
      * Escape string.
-     * @param  string      $string
-     * @param  null|string $functions
+     *
+     * @param string      $string
+     * @param null|string $functions
+     *
      * @return string
      */
     public function escape($string, $functions = null)
     {
         static $flags;
 
-        if (!isset($flags)) {
+        if (! isset($flags)) {
             $flags = ENT_QUOTES | ENT_SUBSTITUTE;
         }
 
@@ -373,8 +416,10 @@ class Template
 
     /**
      * Alias to escape function.
-     * @param  string      $string
-     * @param  null|string $functions
+     *
+     * @param string      $string
+     * @param null|string $functions
+     *
      * @return string
      */
     public function e($string, $functions = null)

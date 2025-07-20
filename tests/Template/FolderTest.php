@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace League\Plates\Tests\Template;
 
-use League\Plates\Template\Folder;
 use org\bovigo\vfs\vfsStream;
+use League\Plates\Template\Folder;
+
 
 class FolderTest extends \PHPUnit\Framework\TestCase
 {

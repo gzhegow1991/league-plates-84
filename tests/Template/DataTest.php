@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace League\Plates\Tests\Template;
 
-use League\Plates\Template\Data;
 use PHPUnit\Framework\TestCase;
+use League\Plates\Template\Data;
+
 
 class DataTest extends TestCase
 {

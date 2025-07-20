@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace League\Plates\Tests\Template;
 
-use League\Plates\Template\Functions;
 use PHPUnit\Framework\TestCase;
+use League\Plates\Template\Functions;
+
 
 class FunctionsTest extends TestCase
 {

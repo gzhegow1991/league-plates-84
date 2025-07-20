@@ -115,7 +115,7 @@ class Name
 
     /**
      * Get the parsed template folder.
-     * @return string
+     * @return Folder
      */
     public function getFolder()
     {

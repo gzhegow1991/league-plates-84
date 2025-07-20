@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace League\Plates\Tests\Template;
 
-use League\Plates\Template\FileExtension;
 use PHPUnit\Framework\TestCase;
+use League\Plates\Template\FileExtension;
+
 
 class FileExtensionTest extends TestCase
 {

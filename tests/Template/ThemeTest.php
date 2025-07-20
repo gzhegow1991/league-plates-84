@@ -3,9 +3,10 @@
 namespace League\Plates\Tests\Template;
 
 use League\Plates\Engine;
-use League\Plates\Template\Theme;
 use org\bovigo\vfs\vfsStream;
-use PHPUnit\Framework\{TestCase, Attributes\Test};
+use PHPUnit\Framework\TestCase;
+use League\Plates\Template\Theme;
+
 
 final class ThemeTest extends TestCase
 {
@@ -16,25 +17,24 @@ final class ThemeTest extends TestCase
     /** @var \Throwable */
     private $exception;
 
-    #[Test]
-    public function engine_renders_with_single_themes()
+
+    public function testEngineRendersWithSingleThemes()
     {
-        $this->given_a_directory_structure_is_setup_like('templates', ['main.php' => '<html></html>']);
+        $this->given_a_directory_structure_is_setup_like('templates', [ 'main.php' => '<html></html>' ]);
         $this->given_an_engine_is_created_with_theme(Theme::new($this->vfsPath('templates')));
         $this->when_the_engine_renders('main');
         $this->then_the_rendered_template_matches('<html></html>');
     }
 
-    #[Test]
-    public function engine_renders_with_theme_hierarchy()
+    public function testEngineRendersWithThemeHierarchy()
     {
         $this->given_a_directory_structure_is_setup_like('templates', [
             'parent' => [
-                'main.php' => '<?php $this->layout("layout") ?>parent',
-                'layout.php' => '<html>parent: <?=$this->section("content")?></html>'
+                'main.php'   => '<?php $this->layout("layout") ?>parent',
+                'layout.php' => '<html>parent: <?=$this->section("content")?></html>',
             ],
-            'child' => [
-                'layout.php' => '<html>child: <?=$this->section("content")?></html>'
+            'child'  => [
+                'layout.php' => '<html>child: <?=$this->section("content")?></html>',
             ],
         ]);
         $this->given_an_engine_is_created_with_theme(Theme::hierarchy([
@@ -45,8 +45,7 @@ final class ThemeTest extends TestCase
         $this->then_the_rendered_template_matches('<html>child: parent</html>');
     }
 
-    #[Test]
-    public function duplicate_theme_names_in_hierarchies_are_not_allowed()
+    public function testDuplicateThemeNamesInHierarchiesAreNotAllowed()
     {
         $this->when_a_theme_is_created_like(function () {
             Theme::hierarchy([
@@ -57,19 +56,17 @@ final class ThemeTest extends TestCase
         $this->then_an_exception_is_thrown_with_message('Duplicate theme names in hierarchies are not allowed. Received theme names: [Default, Default].');
     }
 
-    #[Test]
-    public function nested_hierarchies_are_not_allowed()
+    public function testNestedHierarchiesAreNotAllowed()
     {
         $this->when_a_theme_is_created_like(function () {
             Theme::hierarchy([
-                Theme::hierarchy([Theme::new('templates', 'A'), Theme::new('templates', 'B')])
+                Theme::hierarchy([ Theme::new('templates', 'A'), Theme::new('templates', 'B') ]),
             ]);
         });
         $this->then_an_exception_is_thrown_with_message('Nested theme hierarchies are not allowed, make sure to use Theme::new when creating themes in your hierarchy. Theme B is already in a hierarchy.');
     }
 
-    #[Test]
-    public function empty_hierarchies_are_not_allowed()
+    public function testEmptyHierarchiesAreNotAllowed()
     {
         $this->when_a_theme_is_created_like(function () {
             Theme::hierarchy([]);
@@ -77,8 +74,7 @@ final class ThemeTest extends TestCase
         $this->then_an_exception_is_thrown_with_message('Empty theme hierarchies are not allowed.');
     }
 
-    #[Test]
-    public function template_not_found_errors_reference_themes_checked()
+    public function testTemplateNotFoundErrorsReferenceThemesChecked()
     {
         $this->given_a_directory_structure_is_setup_like('templates', []);
         $this->given_an_engine_is_created_with_theme(Theme::hierarchy([
@@ -88,6 +84,7 @@ final class ThemeTest extends TestCase
         $this->when_the_engine_renders('main');
         $this->then_an_exception_is_thrown_with_message('The template "main" was not found in the following themes: Two:vfs://templates/two/main.php, One:vfs://templates/one/main.php');
     }
+
 
     private function given_a_directory_structure_is_setup_like(string $rootDir, array $directoryStructure)
     {
@@ -104,12 +101,13 @@ final class ThemeTest extends TestCase
     {
         try {
             $fn();
-        } catch (\Throwable $e) {
+        }
+        catch ( \Throwable $e ) {
             $this->exception = $e;
         }
     }
 
-    private function vfsPath(string $path): string
+    private function vfsPath(string $path) : string
     {
         return vfsStream::url($path);
     }
@@ -118,7 +116,8 @@ final class ThemeTest extends TestCase
     {
         try {
             $this->result = $this->engine->render($templateName, $data);
-        } catch (\Throwable $e) {
+        }
+        catch ( \Throwable $e ) {
             $this->exception = $e;
         }
     }

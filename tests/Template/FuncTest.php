@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace League\Plates\Tests\Template;
 
 use League\Plates\Engine;
-use League\Plates\Extension\ExtensionInterface;
-use League\Plates\Template\Func;
 use PHPUnit\Framework\TestCase;
+use League\Plates\Template\Func;
+use League\Plates\Extension\ExtensionInterface;
+
 
 class FuncTest extends TestCase
 {

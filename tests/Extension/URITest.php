@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace League\Plates\Tests\Extension;
 
 use League\Plates\Engine;
-use League\Plates\Extension\URI;
 use PHPUnit\Framework\TestCase;
+use League\Plates\Extension\URI;
+
 
 class URITest extends TestCase
 {

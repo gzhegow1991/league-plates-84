@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace League\Plates\Tests\Extension;
 
 use League\Plates\Engine;
-use League\Plates\Extension\Asset;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use League\Plates\Extension\Asset;
+
 
 class AssetTest extends TestCase
 {

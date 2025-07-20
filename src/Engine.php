@@ -299,8 +299,17 @@ class Engine
      * @param  array  $data
      * @return string
      */
-    public function render($name, array $data = array())
+    public function render($name, array $data = [])
     {
-        return $this->make($name)->render($data);
+        $template = $this->make($name);
+
+        try {
+            $content = $template->render($data);
+        }
+        catch ( \Throwable $e ) {
+            throw new \RuntimeException($e->getMessage(), -1, $e);
+        }
+
+        return $content;
     }
 }
